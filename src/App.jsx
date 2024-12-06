@@ -8,14 +8,6 @@ import {
 
 function App() {
   useEditorPanelConfig([
-    // { type: 'element', name: 'source' },
-    // {
-    //   type: 'column',
-    //   name: 'measure',
-    //   source: 'source',
-    //   allowMultiple: false,
-    //   allowedTypes: ['number', 'integer'],
-    // },
     {
       type: 'action-trigger',
       name: 'onLoadAction',
