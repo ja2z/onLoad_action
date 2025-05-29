@@ -1,9 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
-import { useConfig, useEditorPanelConfig, useActionTrigger, useVariable } from "@sigmacomputing/plugin";
+import {
+  client,
+  useConfig,
+  useEditorPanelConfig,
+  useActionTrigger,
+  useVariable,
+} from "@sigmacomputing/plugin";
 
 function App() {
   useEditorPanelConfig([
+    { name: "backgroundColor", type: "text", defaultValue: "#ffffff" },
     {
       type: "action-trigger",
       name: "onLoadAction",
@@ -49,19 +56,22 @@ function App() {
 
   const config = useConfig();
   const triggerOnLoadAction = useActionTrigger(config.onLoadAction);
-  
+
+  // set background color
+  const backgroundColor = client.config.getKey("backgroundColor");
+  console.log("bg: " + backgroundColor);
   // Action triggers for each variable
   const triggerOnVar1ChangeAction = useActionTrigger(config.onVar1ChangeAction);
   const triggerOnVar2ChangeAction = useActionTrigger(config.onVar2ChangeAction);
   const triggerOnVar3ChangeAction = useActionTrigger(config.onVar3ChangeAction);
   const triggerOnVar4ChangeAction = useActionTrigger(config.onVar4ChangeAction);
-  
+
   // Variable data
   const var1ControlData = useVariable(config.var1Control);
   const var2ControlData = useVariable(config.var2Control);
   const var3ControlData = useVariable(config.var3Control);
   const var4ControlData = useVariable(config.var4Control);
-  
+
   // Checkbox values
   const var1FiresOnLoadValue = config.var1FiresOnLoad;
   const var2FiresOnLoadValue = config.var2FiresOnLoad;
@@ -80,13 +90,13 @@ function App() {
 
   // Flag to track if initial render has happened
   const initialRenderRef = useRef(true);
-  
+
   // Keep track of previous values
   const prevVar1ControlRef = useRef(var1Control);
   const prevVar2ControlRef = useRef(var2Control);
   const prevVar3ControlRef = useRef(var3Control);
   const prevVar4ControlRef = useRef(var4Control);
-  
+
   // State to track if onLoadAction should be triggered
   const [shouldTriggerOnLoad, setShouldTriggerOnLoad] = useState(false);
 
@@ -112,13 +122,13 @@ function App() {
     if (initialRenderRef.current) {
       console.log("Triggering onLoadAction because the page was loaded");
       triggerOnLoadAction();
-      
+
       // Initialize the previous values after the first render
       prevVar1ControlRef.current = var1Control;
       prevVar2ControlRef.current = var2Control;
       prevVar3ControlRef.current = var3Control;
       prevVar4ControlRef.current = var4Control;
-      
+
       initialRenderRef.current = false;
     }
   }, [triggerOnLoadAction, var1Control, var2Control, var3Control, var4Control]);
@@ -129,9 +139,9 @@ function App() {
     if (initialRenderRef.current) {
       return;
     }
-    
+
     let shouldFireOnLoad = false;
-    
+
     // Check var1 changes
     if (hasValueChanged(prevVar1ControlRef.current, var1Control)) {
       console.log("var1 changed from", prevVar1ControlRef.current, "to", var1Control);
@@ -140,7 +150,7 @@ function App() {
         shouldFireOnLoad = true;
       }
     }
-    
+
     // Check var2 changes
     if (hasValueChanged(prevVar2ControlRef.current, var2Control)) {
       console.log("var2 changed from", prevVar2ControlRef.current, "to", var2Control);
@@ -149,7 +159,7 @@ function App() {
         shouldFireOnLoad = true;
       }
     }
-    
+
     // Check var3 changes
     if (hasValueChanged(prevVar3ControlRef.current, var3Control)) {
       console.log("var3 changed from", prevVar3ControlRef.current, "to", var3Control);
@@ -158,7 +168,7 @@ function App() {
         shouldFireOnLoad = true;
       }
     }
-    
+
     // Check var4 changes
     if (hasValueChanged(prevVar4ControlRef.current, var4Control)) {
       console.log("var4 changed from", prevVar4ControlRef.current, "to", var4Control);
@@ -167,24 +177,32 @@ function App() {
         shouldFireOnLoad = true;
       }
     }
-    
+
     // Set flag to trigger onLoad in the next effect
     if (shouldFireOnLoad) {
       setShouldTriggerOnLoad(true);
     }
-    
+
     // Update previous values
     prevVar1ControlRef.current = var1Control;
     prevVar2ControlRef.current = var2Control;
     prevVar3ControlRef.current = var3Control;
     prevVar4ControlRef.current = var4Control;
-    
   }, [
-    var1Control, var2Control, var3Control, var4Control,
-    var1FiresOnLoadValue, var2FiresOnLoadValue, var3FiresOnLoadValue, var4FiresOnLoadValue,
-    triggerOnVar1ChangeAction, triggerOnVar2ChangeAction, triggerOnVar3ChangeAction, triggerOnVar4ChangeAction
+    var1Control,
+    var2Control,
+    var3Control,
+    var4Control,
+    var1FiresOnLoadValue,
+    var2FiresOnLoadValue,
+    var3FiresOnLoadValue,
+    var4FiresOnLoadValue,
+    triggerOnVar1ChangeAction,
+    triggerOnVar2ChangeAction,
+    triggerOnVar3ChangeAction,
+    triggerOnVar4ChangeAction,
   ]);
-  
+
   // Dedicated effect for triggering onLoadAction
   useEffect(() => {
     if (shouldTriggerOnLoad) {
@@ -194,7 +212,19 @@ function App() {
     }
   }, [shouldTriggerOnLoad, triggerOnLoadAction]);
 
-  return <div style={{ backgroundColor: "transparent" }}></div>;
+  return (
+    <div
+      style={{
+        backgroundColor: backgroundColor,
+        width: "100vw",
+        height: "100vh",
+        margin: 0,
+        position: "absolute",
+        top: 0,
+        left: 0,
+      }}
+    ></div>
+  );
 }
 
 export default App;
