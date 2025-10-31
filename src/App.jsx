@@ -60,6 +60,7 @@ function App() {
   // set background color
   const backgroundColor = client.config.getKey("backgroundColor");
   console.log("bg: " + backgroundColor);
+  
   // Action triggers for each variable
   const triggerOnVar1ChangeAction = useActionTrigger(config.onVar1ChangeAction);
   const triggerOnVar2ChangeAction = useActionTrigger(config.onVar2ChangeAction);
